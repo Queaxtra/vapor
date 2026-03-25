@@ -118,6 +118,12 @@ Initialize or reinitialize local configuration:
 vapor init
 ```
 
+Update the installed Vapor CLI:
+
+```bash
+vapor update
+```
+
 Add a new domain in direct mode:
 
 ```bash
@@ -175,7 +181,6 @@ vapor update test@example.com --enable
 Update an alias with guided selection:
 
 ```bash
-vapor update
 vapor update --interactive
 ```
 
@@ -230,7 +235,7 @@ Typical examples:
 ```bash
 vapor create
 vapor create --to inbox@example.net
-vapor update
+vapor update --interactive
 vapor delete
 vapor domain add
 vapor domain remove

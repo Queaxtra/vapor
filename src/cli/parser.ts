@@ -97,6 +97,10 @@ export function parseCommand(argv: string[]): ParsedCommand {
   }
 
   if (command === "update") {
+    if (!rest.length) {
+      return { name: "self-update" };
+    }
+
     return { name: "update", ...parseFlags(rest, true) };
   }
 

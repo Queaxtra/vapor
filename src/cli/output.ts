@@ -44,6 +44,7 @@ export class CliOutput {
 
 Usage:
   vapor init
+  vapor update
   vapor domain add [<domain>] [--to destination@example.com] [-i|--interactive]
   vapor domain remove [<domain>] [-i|--interactive]
   vapor domain list
@@ -53,6 +54,7 @@ Usage:
   vapor list [domain]
   vapor status [domain|alias@domain]
 
+Run "vapor update" without arguments to update Vapor itself.
 Mutation commands prompt automatically when required values are missing.
 `);
   }

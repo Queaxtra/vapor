@@ -1,6 +1,7 @@
 export type CommandName =
   | "help"
   | "init"
+  | "self-update"
   | "create"
   | "update"
   | "delete"

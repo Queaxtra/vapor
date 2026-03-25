@@ -33,7 +33,19 @@ describe("parseCommand", () => {
 
   test("allows missing targets for interactive mutation flows", () => {
     expect(parseCommand(["update"])).toEqual({
+      name: "self-update",
+    });
+    expect(parseCommand(["update", "--interactive"])).toEqual({
       name: "update",
+      interactive: true,
+    });
+    expect(parseCommand(["update", "--to", "dest@example.net"])).toEqual({
+      name: "update",
+      destination: "dest@example.net",
+    });
+    expect(parseCommand(["update", "alias@example.com"])).toEqual({
+      name: "update",
+      target: "alias@example.com",
     });
     expect(parseCommand(["delete"])).toEqual({
       name: "delete",

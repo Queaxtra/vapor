@@ -12,11 +12,13 @@ import type { PromptAdapter } from "../types/cli.ts";
 import { normalizeDomain, normalizeEmail } from "../core/validation/input.ts";
 import { runConfiguredCommand } from "./commands.ts";
 import { sanitizeTerminalText } from "./sanitize.ts";
+import { SelfUpdateService, type VaporSelfUpdater } from "./updater.ts";
 
 interface RuntimeDependencies {
   prompts?: PromptAdapter;
   output?: CliOutput;
   store?: ConfigStore;
+  selfUpdater?: VaporSelfUpdater;
 }
 
 function createMailRoutingService(token: string): MailRoutingService {
@@ -141,6 +143,7 @@ export async function runCli(argv: string[], dependencies: RuntimeDependencies =
   const output = dependencies.output ?? new CliOutput();
   const paths = createDefaultVaporPaths();
   const store = dependencies.store ?? new ConfigStore(paths, new SecretManager(paths));
+  const selfUpdater = dependencies.selfUpdater ?? new SelfUpdateService();
 
   try {
     const command = parseCommand(argv);
@@ -152,6 +155,23 @@ export async function runCli(argv: string[], dependencies: RuntimeDependencies =
 
     if (command.name === "init") {
       await runInit(prompts, output, store);
+      return;
+    }
+
+    if (command.name === "self-update") {
+      const currentVersion = await selfUpdater.readInstalledVersion();
+      const latestVersion = await selfUpdater.readLatestVersion();
+
+      output.info(`Current version: ${currentVersion}`);
+      output.info(`Latest version: ${latestVersion}`);
+
+      if (currentVersion === latestVersion) {
+        output.success("Vapor is already up to date.");
+        return;
+      }
+
+      await selfUpdater.installVersion(latestVersion);
+      output.success(`Updated Vapor to ${latestVersion}.`);
       return;
     }
 
