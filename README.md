@@ -42,10 +42,10 @@ Vapor resolves Cloudflare zone and account identifiers automatically during setu
 Run directly with `bunx`:
 
 ```bash
-bunx vapor init
+bunx @queaxtra/vapor init
 ```
 
-Or install globally with Bun:
+After a global install, the binary name stays `vapor`:
 
 ```bash
 bun install -g .

@@ -1,5 +1,5 @@
 {
-  "name": "vapor",
+  "name": "@queaxtra/vapor",
   "version": "0.1.0",
   "description": "CLI for managing Cloudflare Email Routing aliases",
   "author": "Queaxtra",
