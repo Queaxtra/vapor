@@ -1,4 +1,3 @@
-// Unit tests for command-line argument parser
 import { describe, expect, test } from "bun:test";
 import { parseCommand } from "./parser.ts";
 

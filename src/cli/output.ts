@@ -1,11 +1,6 @@
-// Console output formatting - renders structured data and status messages for the CLI
 import type { AliasSummary, DomainStatusSummary } from "../core/mail-routing/models.ts";
 import { sanitizeTerminalText } from "./sanitize.ts";
 
-/**
- * Builds a fixed-width table string for aligned terminal output.
- * Column widths are computed from the longest cell in each column (header or data).
- */
 function renderTable(headers: string[], rows: string[][]): string {
   const sanitizedHeaders = headers.map((header) => sanitizeTerminalText(header));
   const sanitizedRows = rows.map((row) => row.map((cell) => sanitizeTerminalText(cell)));
@@ -27,10 +22,6 @@ function renderTable(headers: string[], rows: string[][]): string {
   return `${headerRow}\n${separator}\n${body}`;
 }
 
-/**
- * Aggregates all CLI output operations: info, warnings, errors, and formatted data views.
- * Separating output from business logic enables testability and consistent formatting.
- */
 export class CliOutput {
   public info(message: string): void {
     console.log(message);
@@ -48,7 +39,6 @@ export class CliOutput {
     console.error(message);
   }
 
-  /** Displays the full command reference with all available commands and flags. */
   public printHelp(): void {
     this.info(`Vapor CLI
 
@@ -82,7 +72,6 @@ Mutation commands prompt automatically when required values are missing.
     this.info("");
   }
 
-  /** Renders a table of all aliases; shows empty state message if list is empty. */
   public printAliases(aliases: AliasSummary[]): void {
     if (!aliases.length) {
       this.info("No aliases found.");
@@ -100,7 +89,6 @@ Mutation commands prompt automatically when required values are missing.
     this.info(renderTable(["Alias", "Destination", "Verification", "State", "Rule ID"], rows));
   }
 
-  /** Renders a single alias's full status as labeled key-value pairs. */
   public printAliasStatus(alias: AliasSummary): void {
     this.info(`Alias: ${sanitizeTerminalText(alias.alias)}`);
     this.info(`Domain: ${sanitizeTerminalText(alias.domain)}`);
@@ -110,7 +98,6 @@ Mutation commands prompt automatically when required values are missing.
     this.info(`Rule ID: ${sanitizeTerminalText(alias.ruleId)}`);
   }
 
-  /** Renders a table of all configured domains; shows empty state if none exist. */
   public printDomainStatuses(statuses: DomainStatusSummary[]): void {
     if (!statuses.length) {
       this.info("No domains configured.");
@@ -127,10 +114,6 @@ Mutation commands prompt automatically when required values are missing.
     this.info(renderTable(["Domain", "Default Destination", "Routing", "Pending Destinations"], rows));
   }
 
-  /**
-   * Renders a single domain's full status including zone ID and associated DNS records.
-   * DNS records table is omitted if the domain has no records configured.
-   */
   public printDomainStatus(status: DomainStatusSummary): void {
     this.info(`Domain: ${sanitizeTerminalText(status.domain)}`);
     this.info(`Zone ID: ${sanitizeTerminalText(status.zoneId)}`);

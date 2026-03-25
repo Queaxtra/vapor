@@ -1,10 +1,5 @@
-// Command-line argument parser - tokenizes argv into structured command objects
 import type { ParsedCommand } from "../types/cli.ts";
 
-/**
- * Extracts the value following a flag argument.
- * Used by parseFlags to consume flag-value pairs (e.g., --to destination@example.com).
- */
 function expectValue(argumentsList: string[], index: number, flagName: string): string {
   const value = argumentsList[index + 1];
 
@@ -15,11 +10,6 @@ function expectValue(argumentsList: string[], index: number, flagName: string): 
   throw new Error(`missing value for ${flagName}`);
 }
 
-/**
- * Parses a flat list of argument tokens into flag/key-value pairs.
- * Handles: --help, -h, --to, --enable, --disable, --prune-destination, and positional target.
- * Throws on conflicting flags or unknown options.
- */
 function parseFlags(argumentsList: string[], allowInteractive = false): Omit<ParsedCommand, "name"> {
   const result: Omit<ParsedCommand, "name"> = {};
   let index = 0;
@@ -80,7 +70,6 @@ function parseFlags(argumentsList: string[], allowInteractive = false): Omit<Par
     throw new Error(`unexpected argument: ${token}`);
   }
 
-  // Reject conflicting enable/disable flags
   if (result.enable && result.disable) {
     throw new Error("cannot use --enable and --disable together");
   }
@@ -88,11 +77,6 @@ function parseFlags(argumentsList: string[], allowInteractive = false): Omit<Par
   return result;
 }
 
-/**
- * Converts raw argv array into a ParsedCommand union type.
- * Routes to subcommand handlers for domain operations; delegates flag parsing to parseFlags.
- * Returns { name: "help" } for empty/missing commands or --help flags.
- */
 export function parseCommand(argv: string[]): ParsedCommand {
   const [command, ...rest] = argv;
 
@@ -128,7 +112,6 @@ export function parseCommand(argv: string[]): ParsedCommand {
     return { name: "status", ...parseFlags(rest) };
   }
 
-  // Domain subcommands route to prefixed handlers
   if (command === "domain") {
     const [subcommand, ...domainArgs] = rest;
 

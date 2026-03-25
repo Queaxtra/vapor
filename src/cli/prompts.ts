@@ -1,4 +1,3 @@
-// Terminal input adapters - reads user input from stdin and handles interactive prompts
 import readline from "node:readline/promises";
 import { clearLine, cursorTo, moveCursor } from "node:readline";
 import { fitTerminalLine, sanitizeTerminalText } from "./sanitize.ts";
@@ -21,15 +20,7 @@ function renderOptionLine(option: SelectOption, isSelected: boolean, stdout: Nod
   return ` ${marker} ${label}`;
 }
 
-/**
- * Bridges the PromptAdapter interface to Node's readline module for terminal I/O.
- * Supports plain text input, secret/hidden input (for API tokens), and yes/no confirmations.
- */
 export class TerminalPrompts implements PromptAdapter {
-  /**
-   * Reads a single line of text from stdin, trimming whitespace.
-   * Uses readline's question() which handles line buffering automatically.
-   */
   public async ask(question: string): Promise<string> {
     const rl = readline.createInterface({
       input: process.stdin,
@@ -39,14 +30,10 @@ export class TerminalPrompts implements PromptAdapter {
     try {
       return (await rl.question(question)).trim();
     } finally {
-      rl.close(); // Ensure cleanup even if question() rejects
+      rl.close();
     }
   }
 
-  /**
-   * Reads a single line while allowing a default value on empty submit.
-   * The prompt displays the default in brackets when provided.
-   */
   public async askOptional(question: string, defaultValue?: string): Promise<string> {
     const promptText = defaultValue ? `${question} [${defaultValue}]: ` : `${question}: `;
     const answer = await this.ask(promptText);
@@ -62,11 +49,6 @@ export class TerminalPrompts implements PromptAdapter {
     return "";
   }
 
-  /**
-   * Reads a secret (password-style) input with character-by-character echo control.
-   * Falls back to regular ask() when stdin/stdout are not TTY (e.g., piped input).
-   * Raw mode is used to capture keystrokes without buffering.
-   */
   public async askSecret(question: string): Promise<string> {
     if (!process.stdin.isTTY || !process.stdout.isTTY) {
       return this.ask(question);
@@ -77,7 +59,6 @@ export class TerminalPrompts implements PromptAdapter {
       const stdin = process.stdin;
       const stdout = process.stdout;
 
-      // Restores terminal to normal state on exit (either completion or cancellation)
       const cleanup = (): void => {
         stdin.off("data", onData);
         stdin.pause();
@@ -90,14 +71,12 @@ export class TerminalPrompts implements PromptAdapter {
       const onData = (chunk: string | Buffer): void => {
         const input = chunk.toString("utf8");
 
-        // Ctrl+C cancels the prompt
         if (input === "\u0003") {
           cleanup();
           reject(new Error("prompt cancelled"));
           return;
         }
 
-        // Enter/Return finalizes input
         if (input === "\r" || input === "\n") {
           cleanup();
           stdout.write("\n");
@@ -105,18 +84,15 @@ export class TerminalPrompts implements PromptAdapter {
           return;
         }
 
-        // Backspace removes last character
         if (input === "\u007f") {
           value = value.slice(0, -1);
           return;
         }
 
-        // ANSI escape sequences (arrow keys, function keys) are ignored
         if (input.startsWith("\u001b")) {
           return;
         }
 
-        // Accumulate printable characters
         value += input;
       };
 
@@ -128,10 +104,6 @@ export class TerminalPrompts implements PromptAdapter {
     });
   }
 
-  /**
-   * Prompts for a yes/no confirmation with [y/N] suffix.
-   * Returns true only on explicit "y" or "yes" (case-insensitive).
-   */
   public async confirm(question: string): Promise<boolean> {
     const answer = (await this.ask(`${question} [y/N]: `)).trim().toLowerCase();
 
@@ -142,11 +114,6 @@ export class TerminalPrompts implements PromptAdapter {
     return false;
   }
 
-  /**
-   * Displays a simple interactive selection list.
-   * TTY mode supports arrow keys, enter, and 1-9 shortcuts.
-   * Non-TTY mode falls back to a numbered prompt.
-   */
   public async select(question: string, options: SelectOption[]): Promise<string> {
     if (!options.length) {
       throw new Error("selection options are required");
