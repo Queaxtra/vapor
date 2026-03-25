@@ -1,0 +1,55 @@
+{
+  "name": "vapor",
+  "version": "0.1.0",
+  "description": "CLI for managing Cloudflare Email Routing aliases",
+  "author": "Queaxtra",
+  "license": "MIT",
+  "packageManager": "bun@1.3.10",
+  "engines": {
+    "bun": ">=1.3.10"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/queaxtra/vapor.git"
+  },
+  "homepage": "https://github.com/queaxtra/vapor#readme",
+  "bugs": {
+    "url": "https://github.com/queaxtra/vapor/issues"
+  },
+  "keywords": [
+    "bun",
+    "cli",
+    "cloudflare",
+    "email-routing",
+    "temp-mail",
+    "temporary-email",
+    "alias",
+    "forwarding",
+    "mail",
+    "domain"
+  ],
+  "bin": {
+    "vapor": "./index.ts"
+  },
+  "files": [
+    "index.ts",
+    "src",
+    "README.md",
+    "LICENSE",
+    "!src/**/*.test.ts"
+  ],
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "bunx tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.11",
+    "@types/node": "^24.7.2",
+    "typescript": "^6.0.2"
+  }
+}
